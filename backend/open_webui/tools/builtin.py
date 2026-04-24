@@ -3265,3 +3265,364 @@ async def delete_calendar_event(
     except Exception as e:
         log.exception(f'delete_calendar_event error: {e}')
         return json.dumps({'error': str(e)})
+
+
+# =============================================================================
+# IDE WORKSPACE TOOLS
+# =============================================================================
+
+
+async def read_file(
+    path: str,
+    __request__: Request = None,
+    __user__: dict = None,
+) -> str:
+    """
+    Read the content of a file from the workspace directory.
+    Use this to inspect source code, configuration files, or any text file.
+
+    :param path: Relative file path within the workspace (e.g., 'src/main.py', 'package.json')
+    :return: JSON with file content, size, and metadata
+    """
+    if __request__ is None:
+        return json.dumps({'error': 'Request context not available'})
+
+    try:
+        from open_webui.routers.workspace_fs import _get_workspace_dir, _safe_resolve, MAX_FILE_SIZE
+
+        workspace = _get_workspace_dir()
+        target = _safe_resolve(workspace, path)
+
+        if not target.is_file():
+            return json.dumps({'error': f'File not found: {path}'})
+
+        file_size = target.stat().st_size
+        if file_size > MAX_FILE_SIZE:
+            return json.dumps({'error': f'File too large ({file_size} bytes). Max: {MAX_FILE_SIZE} bytes.'})
+
+        try:
+            content = target.read_text('utf-8')
+        except UnicodeDecodeError:
+            return json.dumps({'error': 'File appears to be binary and cannot be read as text.'})
+
+        return json.dumps({
+            'status': 'success',
+            'path': path,
+            'content': content,
+            'size': file_size,
+            'name': target.name,
+        }, ensure_ascii=False)
+    except Exception as e:
+        log.exception(f'read_file error: {e}')
+        return json.dumps({'error': str(e)})
+
+
+async def write_file(
+    path: str,
+    content: str,
+    __request__: Request = None,
+    __user__: dict = None,
+) -> str:
+    """
+    Write content to a file in the workspace. Creates or overwrites the file.
+    Parent directories are created automatically if they don't exist.
+
+    :param path: Relative file path within the workspace (e.g., 'src/utils.py')
+    :param content: The full content to write to the file
+    :return: JSON confirmation with file path and action taken
+    """
+    if __request__ is None:
+        return json.dumps({'error': 'Request context not available'})
+
+    try:
+        from open_webui.routers.workspace_fs import (
+            _get_workspace_dir, _safe_resolve, MAX_FILE_SIZE, BLOCKED_EXTENSIONS,
+        )
+        from pathlib import Path as _Path
+
+        workspace = _get_workspace_dir()
+        ext = _Path(path).suffix.lower()
+        if ext in BLOCKED_EXTENSIONS:
+            return json.dumps({'error': f'File extension "{ext}" is not allowed.'})
+
+        content_size = len(content.encode('utf-8'))
+        if content_size > MAX_FILE_SIZE:
+            return json.dumps({'error': f'Content too large ({content_size} bytes). Max: {MAX_FILE_SIZE} bytes.'})
+
+        target = _safe_resolve(workspace, path)
+        existed = target.is_file()
+
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, 'utf-8')
+
+        return json.dumps({
+            'status': 'success',
+            'path': path,
+            'action': 'updated' if existed else 'created',
+            'size': content_size,
+        }, ensure_ascii=False)
+    except Exception as e:
+        log.exception(f'write_file error: {e}')
+        return json.dumps({'error': str(e)})
+
+
+async def create_file(
+    path: str,
+    content: str = '',
+    __request__: Request = None,
+    __user__: dict = None,
+) -> str:
+    """
+    Create a new file in the workspace. Fails if the file already exists.
+    Use write_file instead if you want to overwrite an existing file.
+
+    :param path: Relative file path to create (e.g., 'src/components/Button.tsx')
+    :param content: Initial content for the file (default: empty)
+    :return: JSON confirmation with file path
+    """
+    if __request__ is None:
+        return json.dumps({'error': 'Request context not available'})
+
+    try:
+        from open_webui.routers.workspace_fs import _get_workspace_dir, _safe_resolve, BLOCKED_EXTENSIONS
+        from pathlib import Path as _Path
+
+        workspace = _get_workspace_dir()
+        ext = _Path(path).suffix.lower()
+        if ext in BLOCKED_EXTENSIONS:
+            return json.dumps({'error': f'File extension "{ext}" is not allowed.'})
+
+        target = _safe_resolve(workspace, path)
+        if target.exists():
+            return json.dumps({'error': f'File already exists: {path}. Use write_file to overwrite.'})
+
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, 'utf-8')
+
+        return json.dumps({
+            'status': 'success',
+            'path': path,
+            'action': 'created',
+            'size': len(content.encode('utf-8')),
+        }, ensure_ascii=False)
+    except Exception as e:
+        log.exception(f'create_file error: {e}')
+        return json.dumps({'error': str(e)})
+
+
+async def list_directory(
+    path: str = '.',
+    depth: int = 2,
+    __request__: Request = None,
+    __user__: dict = None,
+) -> str:
+    """
+    List files and directories in the workspace. Returns a tree structure.
+    Use this to understand project structure before reading or modifying files.
+
+    :param path: Relative directory path to list (default: workspace root)
+    :param depth: How many levels deep to list (default: 2, max: 5)
+    :return: JSON with directory tree structure including file names, types, and sizes
+    """
+    if __request__ is None:
+        return json.dumps({'error': 'Request context not available'})
+
+    try:
+        from open_webui.routers.workspace_fs import _get_workspace_dir, _safe_resolve, _build_tree_node
+
+        workspace = _get_workspace_dir()
+        target = _safe_resolve(workspace, path)
+
+        if not target.is_dir():
+            return json.dumps({'error': f'Directory not found: {path}'})
+
+        depth = min(depth, 5)
+        tree = _build_tree_node(target, workspace, 0, depth)
+
+        return json.dumps(tree, ensure_ascii=False)
+    except Exception as e:
+        log.exception(f'list_directory error: {e}')
+        return json.dumps({'error': str(e)})
+
+
+async def search_in_files(
+    query: str,
+    path: str = '.',
+    file_pattern: str = '*',
+    __request__: Request = None,
+    __user__: dict = None,
+) -> str:
+    """
+    Search for text within files in the workspace.
+    Useful for finding function definitions, TODO comments, imports, or any text pattern.
+
+    :param query: Text to search for (case-insensitive)
+    :param path: Relative directory to search within (default: workspace root)
+    :param file_pattern: Glob pattern to filter files (e.g., '*.py', '*.ts')
+    :return: JSON with matching results including file paths, line numbers, and content
+    """
+    if __request__ is None:
+        return json.dumps({'error': 'Request context not available'})
+
+    try:
+        import fnmatch as _fnmatch
+        from open_webui.routers.workspace_fs import (
+            _get_workspace_dir, _safe_resolve, MAX_FILE_SIZE, SKIP_DIRS,
+        )
+
+        workspace = _get_workspace_dir()
+        search_root = _safe_resolve(workspace, path)
+
+        if not search_root.is_dir():
+            return json.dumps({'error': f'Search directory not found: {path}'})
+
+        results = []
+        max_results = 50
+
+        for root, dirs, files in os.walk(search_root):
+            dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith('.')]
+
+            for filename in files:
+                if len(results) >= max_results:
+                    break
+                if not _fnmatch.fnmatch(filename, file_pattern):
+                    continue
+
+                from pathlib import Path as _Path
+                filepath = _Path(root) / filename
+                try:
+                    if filepath.stat().st_size > MAX_FILE_SIZE:
+                        continue
+                    content = filepath.read_text('utf-8')
+                except (UnicodeDecodeError, PermissionError, OSError):
+                    continue
+
+                for line_num, line in enumerate(content.split('\n'), 1):
+                    if query.lower() in line.lower():
+                        if len(results) >= max_results:
+                            break
+                        relative = str(filepath.relative_to(workspace)).replace('\\', '/')
+                        results.append({
+                            'path': relative,
+                            'line': line_num,
+                            'content': line.strip()[:200],
+                        })
+
+            if len(results) >= max_results:
+                break
+
+        return json.dumps({
+            'query': query,
+            'results': results,
+            'total': len(results),
+        }, ensure_ascii=False)
+    except Exception as e:
+        log.exception(f'search_in_files error: {e}')
+        return json.dumps({'error': str(e)})
+
+
+async def execute_shell_command(
+    command: str,
+    cwd: str = '.',
+    timeout: int = 30,
+    __request__: Request = None,
+    __user__: dict = None,
+) -> str:
+    """
+    Execute a shell command in the workspace directory.
+    Use this for running builds, tests, git commands, package managers, etc.
+
+    :param command: The shell command to execute (e.g., 'npm install', 'python -m pytest', 'git status')
+    :param cwd: Working directory relative to workspace (default: workspace root)
+    :param timeout: Maximum execution time in seconds (default: 30, max: 120)
+    :return: JSON with stdout, stderr, and exit code
+    """
+    if __request__ is None:
+        return json.dumps({'error': 'Request context not available'})
+
+    try:
+        import subprocess
+        from open_webui.routers.workspace_fs import _get_workspace_dir, _safe_resolve
+
+        workspace = _get_workspace_dir()
+        work_dir = _safe_resolve(workspace, cwd)
+
+        if not work_dir.is_dir():
+            return json.dumps({'error': f'Working directory not found: {cwd}'})
+
+        timeout = min(timeout, 120)
+        is_windows = os.name == 'nt'
+
+        try:
+            if is_windows:
+                result = subprocess.run(
+                    command, shell=True, capture_output=True, text=True,
+                    cwd=str(work_dir), timeout=timeout,
+                    env={**os.environ, 'PYTHONIOENCODING': 'utf-8'},
+                )
+            else:
+                result = subprocess.run(
+                    command, shell=True, capture_output=True, text=True,
+                    cwd=str(work_dir), timeout=timeout, executable='/bin/bash',
+                    env={**os.environ, 'PYTHONIOENCODING': 'utf-8'},
+                )
+
+            return json.dumps({
+                'status': 'success',
+                'exit_code': result.returncode,
+                'stdout': result.stdout[-10000:] if result.stdout else '',
+                'stderr': result.stderr[-5000:] if result.stderr else '',
+                'command': command,
+                'cwd': cwd,
+            }, ensure_ascii=False)
+        except subprocess.TimeoutExpired:
+            return json.dumps({
+                'status': 'timeout',
+                'error': f'Command timed out after {timeout}s',
+                'command': command,
+            })
+    except Exception as e:
+        log.exception(f'execute_shell_command error: {e}')
+        return json.dumps({'error': str(e)})
+
+
+async def delete_file(
+    path: str,
+    __request__: Request = None,
+    __user__: dict = None,
+) -> str:
+    """
+    Delete a file or directory from the workspace.
+
+    :param path: Relative path to the file or directory to delete
+    :return: JSON confirmation
+    """
+    if __request__ is None:
+        return json.dumps({'error': 'Request context not available'})
+
+    try:
+        from open_webui.routers.workspace_fs import _get_workspace_dir, _safe_resolve
+
+        workspace = _get_workspace_dir()
+        target = _safe_resolve(workspace, path)
+
+        if not target.exists():
+            return json.dumps({'error': f'Path not found: {path}'})
+
+        if target == workspace:
+            return json.dumps({'error': 'Cannot delete workspace root.'})
+
+        if target.is_file():
+            target.unlink()
+        elif target.is_dir():
+            import shutil
+            shutil.rmtree(target)
+
+        return json.dumps({
+            'status': 'success',
+            'path': path,
+            'action': 'deleted',
+        }, ensure_ascii=False)
+    except Exception as e:
+        log.exception(f'delete_file error: {e}')
+        return json.dumps({'error': str(e)})

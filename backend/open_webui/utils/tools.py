@@ -98,6 +98,13 @@ from open_webui.tools.builtin import (
     create_calendar_event,
     update_calendar_event,
     delete_calendar_event,
+    read_file,
+    write_file,
+    create_file,
+    list_directory,
+    search_in_files,
+    execute_shell_command,
+    delete_file,
 )
 
 import copy
@@ -569,6 +576,20 @@ async def get_builtin_tools(
     ):
         builtin_functions.extend(
             [search_calendar_events, create_calendar_event, update_calendar_event, delete_calendar_event]
+        )
+
+    # Workspace tools - read, write, execute filesystem operations
+    if is_builtin_tool_enabled('workspace'):
+        builtin_functions.extend(
+            [
+                read_file,
+                write_file,
+                create_file,
+                list_directory,
+                search_in_files,
+                execute_shell_command,
+                delete_file,
+            ]
         )
 
     for func in builtin_functions:

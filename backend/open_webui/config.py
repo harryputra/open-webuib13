@@ -1210,6 +1210,14 @@ TERMINAL_SERVER_CONNECTIONS = PersistentConfig(
 )
 
 ####################################
+# WORKSPACE Filesystem API (Antigravity IDE)
+####################################
+
+WORKSPACE_DIR = os.environ.get("WORKSPACE_DIR", "")
+WORKSPACE_MAX_FILE_SIZE = int(os.environ.get("WORKSPACE_MAX_FILE_SIZE", 5 * 1024 * 1024))
+WORKSPACE_BLOCKED_EXTENSIONS = [".exe", ".dll", ".so", ".bin", ".msi", ".bat", ".cmd", ".com", ".scr"]
+
+####################################
 # WEBUI
 ####################################
 
