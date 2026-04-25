@@ -135,6 +135,8 @@
 				return $user?.role === 'admin';
 			case 'ide':
 				return true;
+			case 'safe-update':
+				return true;
 			default:
 				return false;
 		}
@@ -147,7 +149,8 @@
 			automations: { label: 'Automations', href: '/automations', iconType: 'automations' },
 			calendar: { label: 'Calendar', href: '/calendar', iconType: 'calendar' },
 			playground: { label: 'Playground', href: '/playground', iconType: 'playground' },
-			ide: { label: 'IDE', href: '/ide', iconType: 'ide' }
+			ide: { label: 'IDE', href: '/ide', iconType: 'ide' },
+			'safe-update': { label: '🚀 Safe Update', href: '#', iconType: 'update' }
 		};
 		return items[id];
 	};
@@ -1122,8 +1125,25 @@
 									<a
 										id="sidebar-{itemId}-button"
 										class="grow flex items-center space-x-3 rounded-2xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-										href={meta.href}
-										on:click={itemClickHandler}
+										href={itemId === 'safe-update' ? '#' : meta.href}
+										on:click={(e) => {
+											if (itemId === 'safe-update') {
+												e.preventDefault();
+												if (confirm('Mulai Update Aman ke v0.9.2? Fitur Antigravity akan dicadangkan dan dipulihkan otomatis.')) {
+													// Trigger update via a hidden message or special handler
+													const chatInput = document.getElementById('chat-input');
+													if (chatInput) {
+														chatInput.value = '/execute_safe_update';
+														const submitBtn = document.querySelector('button[type=\"submit\"]');
+														if (submitBtn) submitBtn.click();
+													} else {
+														alert('Mohon buka chat terlebih dahulu untuk menjalankan update.');
+													}
+												}
+											} else {
+												itemClickHandler();
+											}
+										}}
 										draggable="false"
 										aria-label={$i18n.t(meta.label)}
 									>
@@ -1180,6 +1200,10 @@
 											{:else if itemId === 'ide'}
 												<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4.5">
 													<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+												</svg>
+											{:else if itemId === 'safe-update'}
+												<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4.5 text-yellow-500">
+													<path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
 												</svg>
 											{/if}
 										</div>
