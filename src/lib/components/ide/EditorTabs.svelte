@@ -31,11 +31,15 @@
 <div class="editor-tabs">
 	<div class="tabs-scroll">
 		{#each files as file (file.path)}
-			<button
+			<div
 				class="tab"
 				class:active={file.path === activeFilePath}
 				on:click={() => handleTabClick(file.path)}
+				on:keydown={(e) => e.key === 'Enter' && handleTabClick(file.path)}
+				role="tab"
+				tabindex="0"
 				title={file.path}
+				aria-selected={file.path === activeFilePath}
 			>
 				<span class="tab-icon">{getFileIcon(file.name)}</span>
 				<span class="tab-name">{file.name}</span>
@@ -43,15 +47,17 @@
 					<span class="tab-modified">●</span>
 				{/if}
 				<button
+					type="button"
 					class="tab-close"
 					on:click={(e) => handleTabClose(e, file.path)}
 					title="Close"
+					aria-label="Close Tab"
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="close-icon">
 						<path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
 					</svg>
 				</button>
-			</button>
+			</div>
 		{/each}
 	</div>
 </div>

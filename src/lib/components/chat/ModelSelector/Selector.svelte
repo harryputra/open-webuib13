@@ -535,7 +535,7 @@
 			{:else}
 				{placeholder}
 			{/if}
-			<ChevronDown className=" self-center ml-2 size-3" strokeWidth="2.5" />
+			<ChevronDown className=" shrink-0 self-center ml-2 size-3" strokeWidth="2.5" />
 		</div>
 	</button>
 

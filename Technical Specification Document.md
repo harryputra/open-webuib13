@@ -30,6 +30,9 @@ Antigravity Zenith adalah transformasi Open WebUI menjadi sebuah "AI-Powered Res
 - [feat] Save functionality with JSON Body support in backend.
 - [fix] Router priority fix in `main.py` to prevent SPA routing conflicts.
 - [feat] Smart Version Checking for Safe Update.
+- [fix] Chrome Flexbox rendering issue (`shrink-0`) in Svelte components.
+- [feat] Antigravity Sync: System updated to v0.9.2 architecture while preserving local patches.
+- [feat] Auto-Coding Engine: Created `antigravity_tools.py` standard Open WebUI tool for direct LLM workspace manipulation (read, write, list).
 
 ## 🧪 Testing Methodology
 - **Integrasi Manual**: Pengujian langsung rute API menggunakan `curl` dan verifikasi visual pada browser (Hard Refresh).
@@ -37,7 +40,7 @@ Antigravity Zenith adalah transformasi Open WebUI menjadi sebuah "AI-Powered Res
 
 ## 🔮 Roadmap (In Progress)
 - **System Analyst Expert Mode**: AI persona khusus untuk perancangan sistem dengan tombol interaktif Revisi/Eksekusi.
-- **Auto-Coding Engine**: Otomatisasi penulisan file berdasarkan blueprint yang disetujui.
+- **Project Structure Visualizer**: Render direktori secara langsung pada UI chat berdasarkan output LLM.
 
 ---
 *Last Updated: 2026-04-25 by Antigravity Architect*

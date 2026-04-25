@@ -40,6 +40,7 @@ RUN npm ci --force
 
 COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
+# cache buster 4
 RUN npm run build
 
 ######## WebUI backend ########
