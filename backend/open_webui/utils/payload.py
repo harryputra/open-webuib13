@@ -114,6 +114,11 @@ def apply_model_params_to_body_openai(params: dict, form_data: dict) -> dict:
         'logit_bias': lambda x: x,
         'response_format': dict,
     }
+
+    # ANTIGRAVITY: Increase default output length
+    if 'max_tokens' not in form_data and 'max_tokens' not in params:
+        form_data['max_tokens'] = 16384
+
     return apply_model_params_to_body(params, form_data, mappings)
 
 
@@ -170,6 +175,14 @@ def apply_model_params_to_body_ollama(params: dict, form_data: dict) -> dict:
         'use_mlock': bool,
         'num_thread': int,
     }
+
+    # ANTIGRAVITY: Increase default output length and context window
+    options = form_data.get('options', {}) or {}
+    if 'num_predict' not in options and 'num_predict' not in params and 'max_tokens' not in params:
+        params['num_predict'] = 16384
+    if 'num_ctx' not in options and 'num_ctx' not in params:
+        params['num_ctx'] = 32768
+
 
     def parse_json(value: str) -> dict:
         """

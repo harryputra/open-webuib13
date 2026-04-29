@@ -117,6 +117,46 @@
 			unsubscribeArtifactContents();
 		};
 	});
+
+	const saveToProject = async () => {
+		const content = contents[selectedContentIdx].content;
+		const filename = prompt('Nama file project:', 'index.html') || 'index.html';
+		
+		try {
+			const res = await fetch('/api/v1/antigravity/save-preview', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ content, filename })
+			});
+			const data = await res.json();
+			if (data.status === 'success') {
+				toast.success(`Berhasil disimpan ke: ${data.path}`);
+			}
+		} catch (e) {
+			toast.error('Gagal menyimpan project.');
+		}
+	};
+
+	const runLocally = async () => {
+		const content = contents[selectedContentIdx].content;
+		try {
+			const saveRes = await fetch('/api/v1/antigravity/save-preview', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ content, filename: 'temp_run.html' })
+			});
+			const saveData = await saveRes.json();
+			
+			const res = await fetch('/api/v1/antigravity/run', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ path: saveData.path })
+			});
+			toast.info('Menjalankan project di komputer Anda...');
+		} catch (e) {
+			toast.error('Gagal menjalankan project.');
+		}
+	};
 </script>
 
 <div
@@ -205,6 +245,28 @@
 						</Tooltip>
 
 						{#if contents[selectedContentIdx].type === 'iframe'}
+							<Tooltip content={$i18n.t('Save to Project')}>
+								<button
+									class=" bg-none border-none text-xs bg-gray-50 hover:bg-blue-50 dark:bg-gray-850 dark:hover:bg-blue-900/30 transition rounded-md p-0.5 text-blue-600 dark:text-blue-400"
+									on:click={saveToProject}
+								>
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-3.5">
+										<path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+									</svg>
+								</button>
+							</Tooltip>
+
+							<Tooltip content={$i18n.t('Run Locally')}>
+								<button
+									class=" bg-none border-none text-xs bg-gray-50 hover:bg-green-50 dark:bg-gray-850 dark:hover:bg-green-900/30 transition rounded-md p-0.5 text-green-600 dark:text-green-400"
+									on:click={runLocally}
+								>
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-3.5">
+										<path d="M6.3 2.841A.75.75 0 0 1 7.05 2.5a.75.75 0 0 1 .442.145l9.75 6.5a.75.75 0 0 1 0 1.25l-9.75 6.5a.75.75 0 0 1-1.142-.625V3.3a.75.75 0 0 1 .3-.459Z" />
+									</svg>
+								</button>
+							</Tooltip>
+
 							<Tooltip content={$i18n.t('Open in full screen')}>
 								<button
 									class=" bg-none border-none text-xs bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-md p-0.5"
@@ -244,11 +306,7 @@
 								title="Content"
 								srcdoc={contents[selectedContentIdx].content}
 								class="w-full border-0 h-full rounded-none"
-								sandbox="allow-scripts allow-downloads{($settings?.iframeSandboxAllowForms ?? false)
-									? ' allow-forms'
-									: ''}{($settings?.iframeSandboxAllowSameOrigin ?? false)
-									? ' allow-same-origin'
-									: ''}"
+								sandbox="allow-scripts allow-downloads allow-forms allow-same-origin"
 								on:load={iframeLoadHandler}
 							></iframe>
 						{:else if contents[selectedContentIdx].type === 'svg'}

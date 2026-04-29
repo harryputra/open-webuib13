@@ -801,7 +801,8 @@ else:
     try:
         AIOHTTP_CLIENT_TIMEOUT = int(AIOHTTP_CLIENT_TIMEOUT)
     except Exception:
-        AIOHTTP_CLIENT_TIMEOUT = 300
+        # ANTIGRAVITY: Increase timeout to 30 minutes for long document generation
+        AIOHTTP_CLIENT_TIMEOUT = 1800
 
 
 AIOHTTP_CLIENT_SESSION_SSL = os.environ.get('AIOHTTP_CLIENT_SESSION_SSL', 'True').lower() == 'true'

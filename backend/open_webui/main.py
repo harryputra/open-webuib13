@@ -80,7 +80,7 @@ from open_webui.routers import (
     tasks, auths, channels, chats, notes, folders, configs, groups,
     files, functions, memories, models, knowledge, prompts,
     evaluations, skills, tools, users, utils, scim, terminals,
-    automations, calendar, workspace_fs
+    automations, calendar, workspace_fs, antigravity
 )
 
 from open_webui.routers.retrieval import (
@@ -1415,6 +1415,7 @@ app.include_router(terminals.router, prefix='/api/v1/terminals', tags=['terminal
 app.include_router(automations.router, prefix='/api/v1/automations', tags=['automations'])
 app.include_router(calendar.router, prefix='/api/v1/calendars', tags=['calendars'])
 app.include_router(workspace_fs.router, prefix="/api/v1/workspace/fs", tags=["workspace"])
+app.include_router(antigravity.router, prefix='/api/v1/antigravity', tags=['antigravity'])
 
 # SCIM 2.0 API for identity management
 if ENABLE_SCIM:
