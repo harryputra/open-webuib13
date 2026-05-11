@@ -1,0 +1,25 @@
+FROM qwen2.5:3b
+
+# ============================================================
+# antigravity-balanced — Profile SEIMBANG kualitas vs kecepatan
+# Target: 8-15 tok/s di i7-8650U, kualitas mendekati 7B
+# Use case: chat utama, RAG, web search synthesis, tool calling
+# ============================================================
+
+PARAMETER num_ctx 4096
+PARAMETER num_batch 256
+PARAMETER num_thread 6
+PARAMETER num_predict 2048
+PARAMETER temperature 0.7
+PARAMETER top_k 40
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.1
+PARAMETER repeat_last_n 256
+PARAMETER mirostat 0
+
+SYSTEM """Kamu adalah Antigravity Assistant — asisten lokal milik Harry Putra Saputra (dosen POLMAN Bandung).
+Jawab dengan Bahasa Indonesia yang jelas, terstruktur, dan to-the-point.
+Pakai tool yang tersedia (slides, code, RAG, web search, project_manager) saat user butuh action nyata.
+Jangan halusinasi — kalau tidak yakin, sebut "saya tidak yakin" atau gunakan web search/RAG.
+Output kode selalu di code block dengan bahasa-tag yang benar.
+"""

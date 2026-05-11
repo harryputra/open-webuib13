@@ -5,7 +5,6 @@
 	import { oneDark } from '@codemirror/theme-one-dark';
 	import { javascript } from '@codemirror/lang-javascript';
 	import { python } from '@codemirror/lang-python';
-	import { languageData } from '@codemirror/language-data';
 	import { keymap } from '@codemirror/view';
 
 	const dispatch = createEventDispatcher();
@@ -30,8 +29,8 @@
 			case 'python':
 				return python();
 			default:
-				// Use language data autodetection for other languages
-				return languageData;
+				// No language extension — CodeMirror akan tetap tampilkan plain text dengan basicSetup.
+				return [];
 		}
 	}
 

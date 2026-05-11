@@ -1,5 +1,13 @@
 @reference "./tailwind.css";
 
+/* Custom utilities — wajib di-register pakai @utility di Tailwind 4 supaya bisa di-@apply */
+@utility font-primary {
+	font-family: 'Archivo', 'Vazirmatn', sans-serif;
+}
+@utility font-secondary {
+	font-family: 'InstrumentSerif', sans-serif;
+}
+
 @font-face {
 	font-family: 'Inter';
 	src: url('/assets/fonts/Inter-Variable.ttf');
@@ -33,6 +41,42 @@
 /* --app-text-scale is updated via the UI Scale slider (Interface.svelte) */
 :root {
 	--app-text-scale: 1;
+	--zenith-accent: #8b5cf6;
+	--zenith-accent-secondary: #d946ef;
+	--zenith-glow: 0 0 20px rgba(139, 92, 246, 0.15);
+}
+
+.dark {
+	--zenith-accent: #a78bfa;
+	--zenith-accent-secondary: #f0abfc;
+	--zenith-glow: 0 0 25px rgba(167, 139, 250, 0.2);
+}
+
+body {
+	@apply bg-[#030303] text-gray-900 dark:text-gray-100 font-primary antialiased;
+	background-image: 
+		radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 40%),
+		radial-gradient(at 100% 100%, rgba(217, 70, 239, 0.08) 0px, transparent 40%);
+	background-attachment: fixed;
+}
+
+.zenith-glass {
+	@apply backdrop-blur-3xl bg-white/70 dark:bg-[#08080a]/60 border border-white/10 dark:border-white/5 shadow-2xl;
+}
+
+.zenith-gradient-text {
+	@apply bg-linear-to-r from-[--zenith-accent] to-[--zenith-accent-secondary] bg-clip-text text-transparent font-bold;
+}
+
+body {
+	background: #ffffff;
+	color: #000000;
+	font-family: 'Archivo', sans-serif;
+}
+
+.dark body {
+	background: #08080a;
+	color: #eeeeee;
 }
 
 html {
@@ -389,7 +433,7 @@ input[type='number'] {
 }
 
 .bg-gray-950-90 {
-	background-color: rgba(var(--color-gray-950, #0d0d0d), 0.9);
+	background-color: color-mix(in srgb, var(--color-gray-950, #0d0d0d), transparent 10%);
 }
 
 .ProseMirror {
@@ -717,15 +761,6 @@ input[type='number'] {
 	white-space: nowrap;
 }
 
-body {
-	background: #fff;
-	color: #000;
-}
-
-.dark body {
-	background: #171717;
-	color: #eee;
-}
 
 /* Position the handle relative to each LI */
 .pm-li--with-handle {

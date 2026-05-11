@@ -123,7 +123,7 @@
 
 	<div slot="content">
 		<div
-			class="{className} rounded-2xl px-1 py-1 border border-gray-100 dark:border-gray-800 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg text-sm"
+			class="{className} rounded-2xl px-1 py-1 zenith-glass border border-white/5 z-50 dark:text-white shadow-2xl text-sm"
 		>
 			{#if profile}
 				<div class=" flex gap-3.5 w-full p-2.5 items-center">
@@ -235,7 +235,7 @@
 			{/if}
 
 			<button
-				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					show = false;
@@ -258,7 +258,7 @@
 				<a
 					href="/admin"
 					draggable="false"
-					class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+					class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 					on:click={async (e) => {
 						if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) {
 							return;
@@ -280,7 +280,7 @@
 			{/if}
 
 			<button
-				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					show = false;
@@ -307,7 +307,7 @@
 					<a
 						href="/workspace"
 						draggable="false"
-						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -364,7 +364,7 @@
 					<a
 						href="/notes"
 						draggable="false"
-						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -408,7 +408,7 @@
 					<a
 						href="/calendar"
 						draggable="false"
-						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -461,7 +461,7 @@
 					<a
 						href="/automations"
 						draggable="false"
-						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -518,7 +518,7 @@
 					<a
 						href="/playground"
 						draggable="false"
-						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+						class="flex flex-1 rounded-xl py-1.5 px-3 hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -567,7 +567,7 @@
 						href="https://docs.openwebui.com"
 						target="_blank"
 						draggable="false"
-						class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+						class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 						id="chat-share-button"
 						on:click={() => {
 							show = false;
@@ -584,7 +584,7 @@
 						href="https://github.com/open-webui/open-webui/releases"
 						target="_blank"
 						draggable="false"
-						class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+						class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 						id="chat-share-button"
 						on:click={() => {
 							show = false;
@@ -598,7 +598,7 @@
 				{/if}
 
 				<button
-					class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+					class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 					type="button"
 					id="chat-share-button"
 					on:click={async () => {
@@ -621,7 +621,7 @@
 			<hr class=" border-gray-50/30 dark:border-gray-800/30 my-1 p-0" />
 
 			<button
-				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer select-none"
+				class="flex rounded-xl py-1.5 px-3 w-full hover:bg-gray-50 dark:hover:bg-white/5 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					const res = await userSignOut();

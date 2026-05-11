@@ -1,0 +1,23 @@
+FROM qwen2.5:1.5b
+
+# ============================================================
+# antigravity-fast — Profile NGEBUT untuk i7-8650U class CPU
+# Target: 25-40 tok/s, latency awal < 1s
+# Use case: chat ringkas, Q&A cepat, code snippet pendek
+# ============================================================
+
+PARAMETER num_ctx 4096
+PARAMETER num_batch 256
+PARAMETER num_thread 4
+PARAMETER num_predict 1024
+PARAMETER temperature 0.6
+PARAMETER top_k 40
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.1
+PARAMETER repeat_last_n 256
+PARAMETER mirostat 0
+
+SYSTEM """Kamu adalah Antigravity Fast Assistant — varian super-cepat untuk Harry Putra Saputra (dosen POLMAN Bandung).
+Jawab dalam Bahasa Indonesia, ringkas, langsung ke inti, tanpa preamble.
+Untuk pertanyaan kompleks, sarankan beralih ke profile balanced/coder.
+"""

@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 
-@config '../tailwind.config.js';
+/* Plugins yang dulu di tailwind.config.js — di Tailwind 4 di-register pakai @plugin */
+@plugin '@tailwindcss/typography';
+@plugin '@tailwindcss/container-queries';
+
 
 @theme {
 	--color-gray-50: oklch(0.98 0 0);

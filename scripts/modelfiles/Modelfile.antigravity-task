@@ -1,0 +1,22 @@
+FROM qwen2.5:0.5b
+
+# ============================================================
+# antigravity-task — Profile MICRO untuk task model
+# Dipakai untuk: title generation, tag generation, search query rewrite,
+# autocomplete, follow-up suggestion. Harus instan (<300ms).
+# ============================================================
+
+PARAMETER num_ctx 2048
+PARAMETER num_batch 128
+PARAMETER num_thread 2
+PARAMETER num_predict 256
+PARAMETER temperature 0.3
+PARAMETER top_k 20
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.05
+PARAMETER mirostat 0
+
+SYSTEM """Kamu adalah micro-assistant untuk task internal Open WebUI.
+Output WAJIB ringkas, satu baris kalau bisa. Tanpa markdown, tanpa penjelasan.
+Bahasa output: ikuti bahasa input user.
+"""

@@ -531,9 +531,9 @@
 			}}
 		>
 			{#if selectedModel}
-				{selectedModel.label}
+				<span class="font-bold text-gray-900 dark:text-gray-100 tracking-tight">{selectedModel.label}</span>
 			{:else}
-				{placeholder}
+				<span class="text-gray-400 dark:text-gray-500 font-medium">{placeholder}</span>
 			{/if}
 			<ChevronDown className=" shrink-0 self-center ml-2 size-3" strokeWidth="2.5" />
 		</div>
@@ -550,7 +550,7 @@
 			<div
 				class="z-40 {$mobile
 					? `w-full`
-					: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-2xl bg-white dark:bg-gray-850 dark:text-white shadow-lg outline-hidden"
+					: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-2xl zenith-glass dark:text-white shadow-2xl outline-hidden border border-white/5"
 				transition:flyAndScale
 			>
 				<slot>

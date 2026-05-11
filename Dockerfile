@@ -170,6 +170,28 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
     rm -rf /var/lib/apt/lists/*; \
     fi
 
+# Install Node.js + Marp CLI + Chromium (for antigravity_presenter_engine slide export)
+# Tambah ~260MB ke image, tapi unlock fitur export PDF/PPTX/PNG.
+# Set ANTIGRAVITY_INSTALL_MARP=false saat build kalau mau skip.
+ARG ANTIGRAVITY_INSTALL_MARP=true
+RUN if [ "$ANTIGRAVITY_INSTALL_MARP" = "true" ]; then \
+    set -eux; \
+    # Pakai flag toleran clock skew (umum di Docker BuildKit Windows/WSL2 setelah hibernate)
+    APT_OPTS='-o Acquire::Check-Valid-Until=false -o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true'; \
+    apt-get $APT_OPTS update || (apt-get install -y --reinstall debian-archive-keyring && apt-get $APT_OPTS update); \
+    apt-get install -y --no-install-recommends --allow-unauthenticated ca-certificates curl gnupg; \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -; \
+    apt-get $APT_OPTS update; \
+    apt-get install -y --no-install-recommends --allow-unauthenticated nodejs chromium fonts-noto-cjk fonts-liberation; \
+    npm install -g --no-audit --no-fund @marp-team/marp-cli@latest; \
+    npm cache clean --force; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/* /tmp/* /root/.npm; \
+    fi
+ENV CHROME_PATH=/usr/bin/chromium \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 # copy embedding weight from build
 # RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 # COPY --from=build /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx

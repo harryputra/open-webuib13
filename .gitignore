@@ -8,6 +8,22 @@ node_modules
 .env
 .env.*
 !.env.example
+
+# Antigravity local secrets / dumps (jangan pernah ke commit)
+.webui_secret_key
+.owui_token
+keys.txt
+urls.txt
+db_config_dump.json
+fix_redis.py
+*.bak
+scratch/
+projects/
+
+# Build/runtime data lokal
+file_rag/
+knowledge_base/
+rag_docs/
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 # Byte-compiled / optimized / DLL files

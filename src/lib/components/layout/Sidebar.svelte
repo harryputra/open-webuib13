@@ -74,6 +74,7 @@
 	import Code from '../icons/Code.svelte';
 	import { slide } from 'svelte/transition';
 	import HotkeyHint from '../common/HotkeyHint.svelte';
+	import ZenithLogo from '../common/ZenithLogo.svelte';
 
 	const BREAKPOINT = 768;
 	const DEFAULT_PINNED_ITEMS = ['notes', 'workspace', 'ide'];
@@ -807,11 +808,7 @@
 						aria-label={$showSidebar ? $i18n.t('Close Sidebar') : $i18n.t('Open Sidebar')}
 					>
 						<div class=" self-center flex items-center justify-center size-9">
-							<img
-								src="{WEBUI_BASE_URL}/static/favicon.png"
-								class="sidebar-new-chat-icon size-6 rounded-full group-hover:hidden"
-								alt=""
-							/>
+							<ZenithLogo className="sidebar-new-chat-icon size-6 group-hover:hidden" />
 
 							<Sidebar className="size-5 hidden group-hover:flex" />
 						</div>
@@ -997,11 +994,10 @@
 		bind:this={navElement}
 		id="sidebar"
 		class="h-screen max-h-[100dvh] min-h-screen select-none {$showSidebar
-			? `${$mobile ? 'bg-gray-50 dark:bg-gray-950' : 'bg-gray-50/70 dark:bg-gray-950/70'} z-50`
-			: ' bg-transparent z-0 '} {$isApp
-			? `ml-[4.5rem] md:ml-0 `
-			: ' transition-all duration-300 '} shrink-0 text-gray-900 dark:text-gray-200 text-sm fixed top-0 left-0 overflow-x-hidden
-        "
+			? 'z-50'
+			: 'z-0'} {$isApp
+			? 'ml-[4.5rem] md:ml-0'
+			: 'transition-all duration-300'} shrink-0 text-gray-900 dark:text-gray-200 text-sm fixed top-0 left-0 overflow-x-hidden zenith-glass"
 		transition:slide={{ duration: 250, axis: 'x' }}
 		data-state={$showSidebar}
 	>
@@ -1019,12 +1015,7 @@
 					draggable="false"
 					on:click={newChatHandler}
 				>
-					<img
-						crossorigin="anonymous"
-						src="{WEBUI_BASE_URL}/static/favicon.png"
-						class="sidebar-new-chat-icon size-6 rounded-full"
-						alt=""
-					/>
+					<ZenithLogo className="sidebar-new-chat-icon size-6 drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" />
 				</a>
 
 				<a href="/" class="flex flex-1 px-0.5" on:click={newChatHandler}>
@@ -1057,7 +1048,7 @@
 				<div
 					class="{scrollTop > 0
 						? 'visible'
-						: 'invisible'} sidebar-bg-gradient-to-b bg-linear-to-b from-gray-50 dark:from-gray-950 to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mb-6"
+						: 'invisible'} sidebar-bg-gradient-to-b bg-linear-to-b from-transparent to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mb-6"
 				></div>
 			</div>
 
@@ -1086,7 +1077,7 @@
 							</div>
 
 							<div class="flex flex-1 self-center translate-y-[0.5px]">
-								<div class=" self-center text-sm font-primary">{$i18n.t('New Chat')}</div>
+								<div class=" self-center text-sm font-primary group-hover:text-black dark:group-hover:text-white transition-colors">{$i18n.t('New Chat')}</div>
 							</div>
 
 							<HotkeyHint name="newChat" className=" group-hover:visible invisible" />
@@ -1627,7 +1618,7 @@
 
 			<div class="px-1.5 pt-1.5 pb-2 sticky bottom-0 z-10 -mt-3 sidebar">
 				<div
-					class=" sidebar-bg-gradient-to-t bg-linear-to-t from-gray-50 dark:from-gray-950 to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mt-6"
+					class=" sidebar-bg-gradient-to-t bg-linear-to-t from-transparent to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mt-6"
 				></div>
 				<div class="flex flex-col font-primary">
 					{#if $user !== undefined && $user !== null}
@@ -1643,7 +1634,7 @@
 							}}
 						>
 							<div
-								class=" flex items-center rounded-2xl py-2 px-1.5 w-full hover:bg-gray-100/50 dark:hover:bg-gray-900/50 transition"
+								class=" flex items-center rounded-2xl py-2 px-1.5 w-full hover:bg-gray-100/50 dark:hover:bg-gray-850/50 transition border border-transparent hover:border-white/5 shadow-sm"
 							>
 								<div class=" self-center mr-3 relative">
 									<img

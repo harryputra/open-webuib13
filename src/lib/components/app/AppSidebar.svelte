@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Plus from '$lib/components/icons/Plus.svelte';
+	import ZenithLogo from '$lib/components/common/ZenithLogo.svelte';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	let selected = '';
@@ -20,7 +21,7 @@
 		<Tooltip content="Home" placement="right">
 			<button
 				aria-label="Home"
-				class=" cursor-pointer {selected === 'home' ? 'rounded-2xl' : 'rounded-full'}"
+				class=" cursor-pointer {selected === 'home' ? 'rounded-2xl' : 'rounded-full'} p-1.5 hover:bg-gray-200 dark:hover:bg-gray-800 transition-all duration-300"
 				on:click={() => {
 					selected = 'home';
 
@@ -29,12 +30,7 @@
 					}
 				}}
 			>
-				<img
-					src="{WEBUI_BASE_URL}/static/splash.png"
-					class="size-11 dark:invert p-0.5"
-					alt="logo"
-					draggable="false"
-				/>
+				<ZenithLogo className="size-8" />
 			</button>
 		</Tooltip>
 	</div>

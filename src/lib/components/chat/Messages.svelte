@@ -102,7 +102,6 @@
 		}
 
 		messages = _messages.reverse();
-		visibleEnd = messages.length;
 	};
 
 	// Throttle message list rebuilds to once per animation frame during streaming.
