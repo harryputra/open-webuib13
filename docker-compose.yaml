@@ -7,13 +7,14 @@ services:
       - POSTGRES_USER=openwebui
       - POSTGRES_PASSWORD=openwebui_pass
       - POSTGRES_DB=openwebui
+    # Tuning hemat RAM — aman untuk VM 8GB (DB Open WebUI kecil, 512MB shared_buffers overkill).
     command: >
       postgres
-      -c shared_buffers=512MB
-      -c effective_cache_size=2GB
-      -c work_mem=16MB
-      -c maintenance_work_mem=128MB
-      -c max_connections=100
+      -c shared_buffers=${PG_SHARED_BUFFERS:-256MB}
+      -c effective_cache_size=${PG_EFFECTIVE_CACHE:-512MB}
+      -c work_mem=8MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=50
       -c random_page_cost=1.1
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -22,7 +23,7 @@ services:
     image: redis:7-alpine
     container_name: open-webui-redis
     restart: unless-stopped
-    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru --save ""
+    command: redis-server --maxmemory ${REDIS_MAXMEMORY:-256mb} --maxmemory-policy allkeys-lru --save ""
 
   # SearXNG — meta-search engine self-hosted, FREE UNLIMITED, gak butuh API key.
   # Open WebUI akses lewat http://searxng:8080

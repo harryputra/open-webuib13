@@ -44,6 +44,15 @@ if not errorlevel 1 (
         )
     )
 
+    :: VibeThinker-3B (GGUF dari HuggingFace) - generator soal STEM/matematika (~2GB)
+    ollama list 2>nul | findstr /I "vibethinker" >nul
+    if errorlevel 1 (
+        echo [info] Pulling VibeThinker-3B ^(~2GB^) dari HuggingFace ...
+        ollama pull hf.co/oussaber/VibeThinker-3B-Q4_K_M-GGUF
+    ) else (
+        echo [info] VibeThinker-3B sudah ada - skip.
+    )
+
     :: Bersihkan model cloud yang gak gratis-unlimited dari Ollama (otomatis, gak interaktif)
     for %%C in (deepseek-v4-pro:cloud deepseek-v3.1:671b-cloud gpt-oss:120b-cloud gpt-oss:20b-cloud) do (
         ollama list 2>nul | findstr /B /C:"%%C" >nul

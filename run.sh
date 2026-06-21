@@ -82,8 +82,24 @@ ensure_ollama_models() {
         warn "Tanpa Ollama, fitur lokal tidak jalan. Install: https://ollama.com/download"
         return 0
     fi
+    # Deteksi RAM (MB) untuk pilih strategi model — server kecil jangan dipaksa model gede.
+    RAM_MB=0
+    if command -v free >/dev/null 2>&1; then
+        RAM_MB=$(free -m | awk '/^Mem:/{print $2}')
+    fi
+    info "RAM terdeteksi: ${RAM_MB} MB"
+
+    # Model inti (selalu): embedding + task-model kecil + generator umum (qwen2.5:3b instruct).
+    MODELS=(nomic-embed-text:latest qwen2.5:0.5b qwen2.5:3b)
+    # llama3.1:8b butuh ~6-8GB — cuma pull kalau RAM lega (>=12GB), kalau tidak skip biar aman.
+    if [ "${RAM_MB:-0}" -ge 12000 ]; then
+        MODELS+=(llama3.1:8b)
+    else
+        warn "RAM < 12GB — skip llama3.1:8b (kegedean). Pakai qwen2.5:3b sebagai generator umum."
+    fi
+
     title "Cek dan pull model wajib (idempotent)..."
-    for m in nomic-embed-text:latest qwen2.5:0.5b qwen2.5:3b llama3.1:8b; do
+    for m in "${MODELS[@]}"; do
         if ollama list 2>/dev/null | awk 'NR>1 {print $1}' | grep -qx "$m"; then
             info "Model $m sudah ada — skip."
         else
@@ -91,6 +107,16 @@ ensure_ollama_models() {
             ollama pull "$m" || warn "Gagal pull $m, lanjut..."
         fi
     done
+
+    # VibeThinker-3B (GGUF dari HuggingFace) — generator soal STEM/matematika (verifiable).
+    # Q4_K_M ~2GB. Reasoning model: lambat di CPU tapi kuat untuk soal yang jawabannya bisa diverifikasi.
+    VIBE_MODEL="hf.co/oussaber/VibeThinker-3B-Q4_K_M-GGUF"
+    if ollama list 2>/dev/null | awk 'NR>1 {print $1}' | grep -qi "vibethinker"; then
+        info "Model VibeThinker-3B sudah ada — skip."
+    else
+        info "Pulling VibeThinker-3B (~2GB) dari HuggingFace ..."
+        ollama pull "$VIBE_MODEL" || warn "Gagal pull VibeThinker-3B, lanjut..."
+    fi
 
     # Hapus model cloud yang bukan free-unlimited (sesuai kriteria user)
     for c in deepseek-v4-pro:cloud deepseek-v3.1:671b-cloud gpt-oss:120b-cloud gpt-oss:20b-cloud; do
@@ -103,16 +129,23 @@ ensure_ollama_models() {
     # Set env Ollama via systemd override (Linux) atau hint untuk Mac
     if [ "$(uname -s)" = "Linux" ] && [ -d /etc/systemd/system ]; then
         OVERRIDE_DIR="/etc/systemd/system/ollama.service.d"
+        # Berapa model boleh ke-load bareng: 8GB → 1 (wajib, cegah OOM), 16GB+ → 2.
+        MAX_LOADED=1
+        [ "${RAM_MB:-0}" -ge 16000 ] && MAX_LOADED=2
         if [ -n "$SUDO" ] || [ "$(id -u)" -eq 0 ]; then
             $SUDO mkdir -p "$OVERRIDE_DIR"
             $SUDO tee "$OVERRIDE_DIR/antigravity.conf" >/dev/null <<EOF
 [Service]
+# Bind ke semua interface supaya container Open WebUI bisa akses via host-gateway (Linux).
+Environment="OLLAMA_HOST=0.0.0.0:11434"
 Environment="OLLAMA_NUM_CTX=4096"
 Environment="OLLAMA_KEEP_ALIVE=30m"
 Environment="OLLAMA_NUM_PARALLEL=1"
+Environment="OLLAMA_MAX_LOADED_MODELS=${MAX_LOADED}"
 Environment="OLLAMA_FLASH_ATTENTION=1"
 Environment="OLLAMA_KV_CACHE_TYPE=q8_0"
 EOF
+            info "OLLAMA_MAX_LOADED_MODELS=${MAX_LOADED} (RAM ${RAM_MB}MB)"
             $SUDO systemctl daemon-reload
             $SUDO systemctl restart ollama 2>/dev/null || true
             info "Env Ollama ter-set via systemd."
