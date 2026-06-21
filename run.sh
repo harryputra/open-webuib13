@@ -298,8 +298,15 @@ mkdir -p "${SCRIPT_DIR}/projects/live_preview"
 # ---------------------------------------------------------------------------
 # 5. Build & start
 # ---------------------------------------------------------------------------
-title "Build & start container (mode detached)..."
-$DC up -d --build
+# NO_BUILD=1 → pakai image yang sudah ada (mis. hasil `docker load` dari laptop),
+# tanpa build di server. Wajib untuk VM RAM kecil bila build frontend OOM.
+if [ "${NO_BUILD:-0}" = "1" ]; then
+    title "Start container (NO_BUILD=1, pakai image yang sudah ada)..."
+    $DC up -d
+else
+    title "Build & start container (mode detached)..."
+    $DC up -d --build
+fi
 
 # ---------------------------------------------------------------------------
 # 6. Tunggu health check
